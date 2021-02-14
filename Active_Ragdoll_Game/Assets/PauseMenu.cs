@@ -4,10 +4,18 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
+    ActiveRagdollAnimator aRagAnim;
+    ActiveRagdoll aRag;
     public static bool GameIsPaused = false;
 
     public GameObject pauseMenuUI;
 
+    void Start()
+    {
+      Cursor.visible = false;
+      aRagAnim = (ActiveRagdollAnimator)FindObjectOfType(typeof(ActiveRagdollAnimator));
+      aRag = (ActiveRagdoll)FindObjectOfType(typeof(ActiveRagdoll));
+    }
     // Update is called once per frame
     void Update()
     {
@@ -15,6 +23,7 @@ public class PauseMenu : MonoBehaviour
       {
         if(GameIsPaused)
         {
+          Cursor.visible = false;
           Resume();
         }  else
         {
@@ -25,12 +34,20 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+      aRagAnim.anim.SetFloat("Vertical", 1f);
+      Cursor.visible = false;
+      aRagAnim.enabled = true;
+      aRag.enabled = true;
       pauseMenuUI.SetActive(false);
       //Time.timeScale = 1f;
       GameIsPaused = false;
     }
     void Pause()
     {
+       aRagAnim.anim.SetFloat("Vertical", 0f);
+       Cursor.visible = true;
+       aRagAnim.enabled = false;
+       aRag.enabled = false;
        pauseMenuUI.SetActive(true);
        //Time.timeScale = 0f;
        GameIsPaused = true;

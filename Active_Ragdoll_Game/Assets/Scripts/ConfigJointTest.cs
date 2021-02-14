@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class ConfigJointTest : MonoBehaviour
 {
+  ActiveRagdollAnimator aRagAnim;
   ActiveRagdoll aRag;
+
   public int positionSpringStrength;
   public Vector3 targetPosition;
   ConfigurableJoint joint;
@@ -13,6 +15,7 @@ public class ConfigJointTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+    aRagAnim = (ActiveRagdollAnimator)FindObjectOfType(typeof(ActiveRagdollAnimator));
     aRag = (ActiveRagdoll)FindObjectOfType(typeof(ActiveRagdoll));
     joint = gameObject.GetComponent<ConfigurableJoint>();
     Debug.Log(joint.zDrive);
@@ -30,6 +33,7 @@ public class ConfigJointTest : MonoBehaviour
     {
 
       if (Input.GetKey(KeyCode.O)){
+        aRagAnim.enabled = false;
         aRag.enabled = false;
         drive. maximumForce = 1000000;
       //  joint.enableCollision = true;
@@ -38,6 +42,7 @@ public class ConfigJointTest : MonoBehaviour
         regDrive. maximumForce = 1000000;
       }
       else if (Input.GetKey(KeyCode.L)){
+        aRagAnim.enabled = true;
         aRag.enabled = true;
       //  joint.enableCollision = false;
         joint.angularXDrive = regDrive;
