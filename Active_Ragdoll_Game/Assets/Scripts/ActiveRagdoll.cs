@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ActiveRagdoll : MonoBehaviour
 {
+public float jumpDelay = 1f;
+public float jumpTimer = 0;
+CheckGround CGround;
 public Quaternion pelvisYRot;
 
 public float speed;
@@ -22,6 +25,8 @@ void Start()
 
 private void FixedUpdate()
   {
+    //chest.AddForce(-chest.transform.y * speed * 1.5f);
+    chest.AddForce(0, -100, 0);
 /////////////////////////////
     if (Input.GetKey(KeyCode.W))
     {
@@ -49,7 +54,7 @@ private void FixedUpdate()
 //////////////////////////////////////////////////////
   if(Input.GetKey(KeyCode.Space))
   {
-     if (isGrounded)
+     if (isGrounded && Time.time > jumpTimer + jumpDelay)
      {
        chest.AddForce(new Vector3(0, jumpForce, 0));
        isGrounded = false;

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
+    public bool isRagdoll = false;
     ActiveRagdollAnimator aRagAnim;
     ActiveRagdoll aRag;
     public static bool GameIsPaused = false;
@@ -19,17 +20,37 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+  if (Input.GetKey(KeyCode.O)){
+    isRagdoll = true;
+  }
+  else if (Input.GetKey(KeyCode.L)){
+    isRagdoll = false;
+  }
+///////////////////////////
       if (Input.GetKeyDown(KeyCode.Escape))
       {
-        if(GameIsPaused)
+        if(GameIsPaused && isRagdoll == false)
         {
+          aRag.enabled = true;
           Cursor.visible = false;
           Resume();
-        }  else
+        }
+        else if (GameIsPaused && isRagdoll == true)
         {
+          aRag.enabled = false;
+          Cursor.visible = false;
+          Resume();
+        } else
+        {
+          aRag.enabled = false;
           Pause();
         }
       }
+
+
+
+
+
     }
 
     public void Resume()
@@ -37,7 +58,6 @@ public class PauseMenu : MonoBehaviour
       aRagAnim.anim.SetFloat("Vertical", 1f);
       Cursor.visible = false;
       aRagAnim.enabled = true;
-      aRag.enabled = true;
       pauseMenuUI.SetActive(false);
       //Time.timeScale = 1f;
       GameIsPaused = false;
@@ -47,7 +67,6 @@ public class PauseMenu : MonoBehaviour
        aRagAnim.anim.SetFloat("Vertical", 0f);
        Cursor.visible = true;
        aRagAnim.enabled = false;
-       aRag.enabled = false;
        pauseMenuUI.SetActive(true);
        //Time.timeScale = 0f;
        GameIsPaused = true;
@@ -55,7 +74,7 @@ public class PauseMenu : MonoBehaviour
     public void RestartScene()
     {
     //Time.timeScale = 1f;
-    SceneManager.LoadScene("SampleScene");
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void QuitGame()
     {

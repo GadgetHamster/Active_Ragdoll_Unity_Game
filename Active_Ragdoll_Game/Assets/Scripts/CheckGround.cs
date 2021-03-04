@@ -24,11 +24,18 @@ int layermask = 1<<9;
      Grounded = false;
      print("we in the air!");
      playerController.isGrounded = false;
-
+     playerController.speed = 200f;
+     playerController.strafeSpeed = 200f;
    } else {
+     if (Grounded == false){
+       playerController.jumpTimer = Time.time;
+     }
      Grounded = true;
      print("we on the ground!");
      playerController.isGrounded = true;
+     playerController.speed = 300f;
+     playerController.strafeSpeed = 250f;
+
 
    }
 
