@@ -129,5 +129,128 @@ private void AddCloud(List<CloudData> currBatch, int x, int y)
 
   //We set our new clouds distance to the camera so we can use it later
   float distToCam = Vector3.Distance(new Vector3(x, transform.position.y, y), cam.transform.position);
+
+  //Finally we add our new CloudData cloud to the current batch
+  currBatch.Add(new CloudData(position, Vector3.zero, Quaternion.identity, x, y, distToCam));
+}
+
+/*We need to generate our noise
+We update our offsets to the noise 'rolls' through the cloud objects
+*/
+
+private void Update()
+{
+  MakeNoise();
+  offsetx += Time.deltaTime * timeScale;
+  offsety += Time.deltaTime * timeScale;
+}
+
+/*This method updates our noise/clouds
+First we check to see if the camera has moved
+If it hasn't we update batches
+If it has moved we need to reset the prevCamPos along with uptdating our batch list before uptdating our batches
+TODO: Set allowed movement range to camera so the player can move a small amount without causing a full batch list reset */
+
+void MakeNoise()
+{
+  if (cam.transform.position == prevCamPos)
+  {
+    UpdateBatches();
+  }
+  else
+  {
+    prevCamPos = cam.transform.position;
+    UpdateBatchesList();
+    UpdateBatches();
+  }
+  RenderBatches();
+  prevCamPos = cam.transform.position;
+}
+
+/*This method updates our clouds
+First we loop through all of our batches in the batchesToUpdate list
+For each batch we need to get each cloud with another loop*/
+
+private void UpdateBatches()
+{
+  foreach (var batch in batchesToUpdate)
+  {
+    foreach (var cloud in batch)
+    {
+      //Get noise size based on clouds pos, noise texture scale, and our offset amount
+      float size = Mathf.PerlinNoise(cloud.x * texScale + offsetx, cloud.y * texScale + offsety);
+
+      //If our cloud has a size thats above our visible cloud threashold we need to show it
+      if (size > minNoiseSize)
+      {
+        //Get the current scale of the cloud
+        float localScaleX = cloud.scale.x;
+
+        //Activate any clouds
+        if (!cloud.isActive)
+        {
+          cloud.SetActive(true);
+          cloud.scale = Vector3.zero;
+        }
+        //If not max size, scale up
+        if (localScaleX < maxScale)
+        {
+          ScaleCloud(cloud, 1);
+
+          //Limit our max size
+          if (cloud.scale.x > maxScale)
+          {
+            cloud.scale = new Vector3(maxScale, maxScale, maxScale);
+          }
+        }
+      }
+      //Active and it shouldn't be, let's scale down
+      else if (size < minNoiseSize)
+      {
+        float localScaleX = cloud.scale.x;
+        ScaleCloud(cloud, -1);
+
+        //When the cloud is really small we can just set it to 0 and hide it
+        if (localScaleX <= 0.1)
+        {
+          cloud.SetActive(false);
+          cloud.scale = Vector3.zero;
+        }
+      }
+    }
+  }
+}
+
+//This method sets our cloud to a new size
+
+private void ScaleCloud(CloudData cloud, int direction)
+{
+  cloud.scale += new Vector3(sizeScale * Time.deltaTime * direction, sizeScale * Time.deltaTime * direction, sizeScale * Time.deltaTime * direction);
+}
+
+//This method clears our batchesToUpdate list because we only want visible batches within this list
+
+private void UpdateBatchesList()
+{
+  //Clears our list
+  batchesToUpdate.Clear();
+
+  //Loop through all the generated batches
+  foreach (var batch in batches)
+  {
+    if (CheckForActiveBatch(batch))
+    {
+      batchesToUpdate.Add(batch);
+    }
+  }
+}
+
+//This method loops through all the batches to update and draws their meshes to the screen
+
+private void RenderBatches(){
+  foreach (var batch in batchesToUpdate)
+  {
+    Graphics.DrawMeshInstanced(cloudMesh, 0, cloudMat, batch.Select((a) => a.matrix).ToList());
+  }
 }
 }

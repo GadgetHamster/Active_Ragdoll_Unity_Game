@@ -119,7 +119,6 @@ float _BladeCurve;
   float3 pos = IN[0] .vertex;
 
 
-
   float3 vNormal = IN[0].normal;
   float4 vTangent = IN[0].tangent;
   float3 vBinormal = cross(vNormal, vTangent) * vTangent.w;
@@ -131,13 +130,13 @@ float _BladeCurve;
   //Debug.Log(vBInormal[0]);
   //
 
-  if ( vBInormal[1] > 0.1 || vBInormal[1] < -0.1){
-  return;
-  }
-
-  /*if (vTangent[1] < 0.1){
+  /*if ( vNormal[1] < 0.995){
   return;
   }*/
+
+  if (pos.y < 5.5){
+  return;
+  }
 
 
 float3x3 tangentToLocal = float3x3(

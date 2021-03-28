@@ -42,7 +42,7 @@ public class ConfigJointTest : MonoBehaviour
     Debug.Log(joint.zDrive);
 
     drive = new JointDrive();
-    drive.positionSpring = 100;
+    drive.positionSpring = 25;
     regDrive = new JointDrive();
     regDrive.positionSpring = positionSpringStrength;
 //    regDrive. maximumForce = 1000000;
